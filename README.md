@@ -123,8 +123,8 @@ The CET maps each character in sequence A to all its occurrence positions in seq
 
 ## Research Context
 
-This implementation accompanies the research manuscript:
-> "Longest Sorted Bucket Sequence: An Algorithmic Bridge Between LCS and 2D LIS"
+This implementation accompanies the IEEE manuscript accepted for publication in [_ISCI2026_](https://ihsanyassin.com/cms/conference.php?conf_id=5a9fbe35-f1ca-410f-908c-12ba446d8f47):
+> "Bucket-Constrained LCS Algorithm from 2D-LIS using Patience Sorting and Dynamic Programming"
 
 The work demonstrates how classical sequence problems can be viewed through different algorithmic lenses, potentially offering new insights for:
 - Bioinformatics sequence alignment
@@ -134,7 +134,8 @@ The work demonstrates how classical sequence problems can be viewed through diff
 ## Requirements
 
 - Python 3.8+
-- No external dependencies (uses only standard library)
+- Core: No external dependencies (uses only standard library)
+- Benchmarks: Refer to [`requirements.txt`](/requirements.txt)
 
 ## License
 
@@ -169,11 +170,11 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 
 If you use this work in your research, please cite:
 ```bibtex
-@software{lsbs2025,
+@software{lsbs2026,
   title={Longest Sorted Bucket Sequence: An Algorithmic Bridge Between LCS and 2D LIS},
   author={[Awwal Mohammed; Caroline Sumathi Selvarajah]},
-  year={2025},
-  url={https://github.com/awwalm/lsbs-public}
+  year={2026},
+  url={https://github.com/awwalm/lsbs-pub}
 }
 ```
 
