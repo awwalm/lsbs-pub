@@ -5,7 +5,9 @@
 
 Official implementation and research repository for the **Longest Sorted Bucket Sequence (LSBS)** algorithm, a unique algorithmic approach that bridges the Longest Common Subsequence (LCS) and 2D Longest Increasing Subsequence (LIS) problems.
 
-## 🔬 Overview
+### See online benchmark demo [here](https://lsbs-web.vercel.app).
+
+## Overview
 
 LSBS is a unique algorithm that solves the Longest Common Subsequence problem by transforming it into a 2D Longest Increasing Subsequence problem through the use of a **Common Element Table (CET)**. The approach provides both theoretical insights and practical implementations for sequence analysis.
 
@@ -16,7 +18,7 @@ LSBS is a unique algorithm that solves the Longest Common Subsequence problem by
 - **Multiple LIS Backends**: Supports both Dynamic Programming and Patience Sorting approaches
 - **Performance Analysis**: Comprehensive comparison with classical LCS algorithms
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Interactive Mode
 ```bash
@@ -38,7 +40,7 @@ from lis_funcs import lis_ps_2d
 length, lcs = lcs_lsbs(sequence1, sequence2, f=lis_ps_2d)
 ```
 
-## 📊 Algorithm Implementations
+## Algorithm Implementations
 
 This repository includes multiple algorithm implementations for comparative analysis:
 
@@ -56,7 +58,7 @@ This repository includes multiple algorithm implementations for comparative anal
 - **Common Element Table** (`cet.py`): Core data structure for LSBS
 - **LSBS Core** (`lsbs.py`): Main LSBS algorithm implementation
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 .
@@ -73,7 +75,7 @@ This repository includes multiple algorithm implementations for comparative anal
 └── README.md            # This file
 ```
 
-## 🧪 Testing
+## Testing
 
 Run the comprehensive test suite:
 
@@ -97,7 +99,7 @@ python lcs_rec.py
 python lis_funcs.py
 ```
 
-## 📈 Performance Characteristics
+## Performance Characteristics
 
 | Algorithm | Time Complexity | Space Complexity | Notes |
 |-----------|----------------|------------------|-------|
@@ -106,7 +108,7 @@ python lis_funcs.py
 | Classic DP LCS | O(nm) | O(nm) | Traditional approach |
 | Recursive LCS | O(2^(n+m)) | O(n+m) | Exponential without memoization |
 
-## 🔧 Algorithm Details
+## Algorithm Details
 
 ### Common Element Table (CET)
 The CET maps each character in sequence A to all its occurrence positions in sequence B:
@@ -119,7 +121,7 @@ The CET maps each character in sequence A to all its occurrence positions in seq
 3. **Apply 2D LIS**: Find longest increasing subsequence on both dimensions
 4. **Reconstruct LCS**: Map result back to original characters
 
-## 📚 Research Context
+## Research Context
 
 This implementation accompanies the research manuscript:
 > "Longest Sorted Bucket Sequence: An Algorithmic Bridge Between LCS and 2D LIS"
@@ -129,28 +131,28 @@ The work demonstrates how classical sequence problems can be viewed through diff
 - Text similarity analysis
 - Pattern matching applications
 
-## 🛠️ Requirements
+## Requirements
 
 - Python 3.8+
 - No external dependencies (uses only standard library)
 
-## 📄 License
+## License
 
 This project is **dual-licensed** to provide maximum flexibility:
 
 ### Choose Your License:
 
-🔓 **MIT License** (More Permissive)
-- ✅ Commercial use without restrictions
-- ✅ Can be included in proprietary software  
-- ✅ Minimal requirements (just attribution)
-- 👥 **Ideal for**: Companies, proprietary projects, maximum adoption
+**MIT License** (More Permissive)
+- Commercial use without restrictions
+- Can be included in proprietary software  
+- Minimal requirements (just attribution)
+- **Ideal for**: Companies, proprietary projects, maximum adoption
 
-🔒 **GPL 3.0 License** (Copyleft)
-- ✅ Commercial use allowed
-- ⚠️ Derivative works must also be open source
-- ⚠️ Must provide source code when distributing
-- 🌍 **Ideal for**: Open source projects, research collaboration, ensuring code stays open
+**GPL 3.0 License** (Copyleft)
+- Commercial use allowed
+- Derivative works must also be open source
+- Must provide source code when distributing
+- **Ideal for**: Open source projects, research collaboration, ensuring code stays open
 
 ### How to Choose:
 - **For commercial/proprietary use**: Choose MIT License
@@ -159,11 +161,11 @@ This project is **dual-licensed** to provide maximum flexibility:
 
 See the [LICENSE](LICENSE) file for complete license texts.
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
-## 📧 Citation
+## Citation
 
 If you use this work in your research, please cite:
 ```bibtex

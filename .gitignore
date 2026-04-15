@@ -4,6 +4,10 @@
 
 # Temporary
 *.xlsx
+*/cpp
+
+# FASTA; massive genome sequence files
+*.fa
 
 *.sublime-project
 *.sublime-workspace

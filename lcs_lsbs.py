@@ -32,6 +32,6 @@ def lcs_lsbs(a: Sequence, b: Sequence, f: Callable = None):
     # matching_buckets = get_cet(a, b)[1]         # We only need the queues (second row of CET)
     matching_buckets = improved_cet(a, b)
     indices = lsbs(buckets=matching_buckets) if not f else lsbs(buckets=matching_buckets, lis_func=f)
-    print("indices from lsbs", indices)
+    # print("indices from lsbs", indices)
     matches = [b[i] for i in indices]
     return len(matches), str().join(matches)

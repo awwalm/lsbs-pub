@@ -23,6 +23,9 @@ def lis_ps_2d(nums: List[Tuple[int, int]]):
     Uses the standard O(n Log n) algorithm for 2D LIS:
     1. Sort points (value, bucket_index) by value asc, then bucket_index desc.
     2. Find LIS on the bucket_index components.
+
+    Identical overriding technique used herewith is explained in this video:
+    https://www.youtube.com/watch?v=OIU8ZLC4qIQ
     """
     n = len(nums)
     if n == 0:
@@ -54,6 +57,11 @@ def lis_ps_2d(nums: List[Tuple[int, int]]):
     # Create a list of items to sort, preserving original pairs for final LIS.
     # Each element: (value, bucket_index, original_pair_tuple)
     # Using original_pair_tuple is fine as we extract value from it.
+
+    # ADDITIONAL NOTES ON THIS BILATERAL SORTING MECHANISM
+    # .sort(key=lambda x: (x[0], -x[1])) means the concurrent lowest set x[0]'s
+    # are taken as a group in ASCENDING order, then each correspionding x[1]'s
+    # are ordered for each group in DESCENDING order.
     enriched_items = [(item[0], item[1], item) for item in nums]
     ei2 = enriched_items.copy()
     enriched_items.sort(key=lambda x: (x[0], -x[1]))
@@ -76,10 +84,10 @@ def lis_ps_2d(nums: List[Tuple[int, int]]):
 
     # Simpler LIS reconstruction:
     # M[j] stores the index in `enriched_items` of the smallest tail of all LIS of buckets of length j.
-    # P[i] stores the index in `enriched_items` of the predecessor of enriched_items[i].
+    # preds[i] stores the index in `enriched_items` of the predecessor of enriched_items[i].
     
     num_enriched = len(enriched_items)
-    P = [-1] * num_enriched # Predecessor indices in enriched_items
+    preds = [-1] * num_enriched # Predecessor indices in enriched_items
     
     # M[k] stores index in enriched_items for LIS of length k (1-indexed length)
     # To map to 0-indexed tails_values: M[k] is index for tails_values[k-1]
@@ -107,8 +115,8 @@ def lis_ps_2d(nums: List[Tuple[int, int]]):
         # The item at enriched_items[i] extends the LIS ending at
         # enriched_items[active_lis_tails_positions[j-1]] if j > 0.
         if j > 0:
-            P[i] = active_lis_tails_positions[j-1]
-        # else P[i] remains -1 (starts an LIS of length 1)
+            preds[i] = active_lis_tails_positions[j-1]
+        # else preds[i] remains -1 (starts an LIS of length 1)
 
     # Reconstruct LIS of (value, bucket_index) pairs
     lis_of_pairs = []
@@ -124,13 +132,13 @@ def lis_ps_2d(nums: List[Tuple[int, int]]):
             # The pair itself is (value, bucket_index, original_item_from_nums)
             # We need the value (enriched_items[current_idx_in_enriched][0])
             lis_of_pairs.append(enriched_items[current_idx_in_enriched][2]) # Append the original (value, bucket) tuple
-            current_idx_in_enriched = P[current_idx_in_enriched]
+            current_idx_in_enriched = preds[current_idx_in_enriched]
         lis_of_pairs.reverse()
 
-    print(
-        "CHECKING TAILS AND LIS CONTENTS...", 
-        [p[0] for p in lis_of_pairs], sep="\n"
-    )
+    # print(
+    #     "CHECKING TAILS AND LIS CONTENTS...", 
+    #     [p[0] for p in lis_of_pairs], sep="\n"
+    # )
     return [p[0] for p in lis_of_pairs] # Return first components (values)
 
 
