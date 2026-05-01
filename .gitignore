@@ -5,6 +5,7 @@
 # Temporary
 *.xlsx
 */cpp
+**/presentation/*.md
 
 # FASTA; massive genome sequence files
 *.fa

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LSBS IEEE Presentation</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: radial-gradient(circle at top, #1b2440 0%, #070b14 70%);
+      color: #f3f6ff;
+      overflow: hidden;
+    }
+    .slide {
+      display: none;
+      height: 100vh;
+      padding: 60px;
+      box-sizing: border-box;
+      animation: fade 0.6s ease;
+    }
+    .slide.active { display: block; }
+    h1, h2 { margin-top: 0; }
+    h1 { font-size: 3rem; }
+    h2 { font-size: 2.2rem; }
+    p, li { font-size: 1.2rem; line-height: 1.6; }
+    .nav {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      gap: 12px;
+    }
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.12);
+      color: white;
+      backdrop-filter: blur(8px);
+    }
+    canvas {
+      background: rgba(255,255,255,0.04);
+      border-radius: 20px;
+      margin-top: 20px;
+    }
+    .code-box {
+      background: rgba(255,255,255,0.06);
+      padding: 20px;
+      border-radius: 18px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="slide active">
+  <h1>Bucket-Constrained LCS from 2D-LIS</h1>
+  <p>A structural reformulation of classical LCS into a bucketed 2D LIS problem.</p>
+  <ul>
+    <li>Transforms LCS into LSBS using Common Element Table (CET)</li>
+    <li>Solves LSBS via 2D LIS</li>
+    <li>Efficient solver inspired by patience sorting and Hunt-Szymanski principles</li>
+  </ul>
+</div>
+
+<div class="slide">
+  <h1>Why rethink LCS?</h1>
+  <ul>
+    <li>Classical DP is O(|A||B|) and dense by design</li>
+    <li>Sparse methods improve runtime but are less intuitive to teach or adapt</li>
+    <li>Need: interpretable structure + efficient sparse behavior</li>
+  </ul>
+  <br>
+  <h2>More specialized methods</h2>
+  <ul>
+    <li>Bitset approach (Hyyrö’s Algorithm; Allison & Dix)</li>
+    <li>Sparse Dynamic Programming (Apostolico & Eppstein et al.; Baker & Giancarlo)</li>
+    <li>Binary-Search, Trees, and Sparse Allocation (Hunt-Szymanski)</li>
+    <li>Classical methods (Smith-Waterman, Wagner & Fischer)</li>
+  </ul>
+</div>
+
+<div class="slide">
+  <h1>Wagner-Fischer vs Smith-Waterman</h1>
+
+  <p>
+    Both Wagner-Fischer and Smith-Waterman solve sequence alignment problems using dynamic programming, but they differ in optimization goals and boundary conditions.
+  </p>
+
+  <ul>
+    <li>Wagner-Fischer performs <strong>global alignment</strong>.</li>
+    <li>Smith-Waterman performs <strong>local alignment</strong>.</li>
+    <li>Both build and evaluate a dynamic programming matrix.</li>
+  </ul>
+
+  <p>
+    The key distinction lies in whether the algorithm compares the full strings end-to-end or isolates only the most similar subsequences.
+  </p>
+</div>
+
+<div class="slide">
+  <h1>Algorithm Details</h1>
+
+  <h2>Wagner-Fischer (Global Alignment)</h2>
+  <ul>
+    <li><strong>Objective:</strong> Minimize Levenshtein distance.</li>
+    <li><strong>Boundary:</strong> D(i,0)=i and D(0,j)=j</li>
+    <li>Forces full sequence alignment from start to end.</li>
+    <li>Useful for diff tools, typo correction, and full-string comparison.</li>
+  </ul>
+
+  <p><strong>Recurrence:</strong></p>
+  <p>D(i,j) = min{ deletion, insertion, substitution/match }</p>
+
+  <h2>Smith-Waterman (Local Alignment)</h2>
+  <ul>
+    <li><strong>Objective:</strong> Maximize similarity score.</li>
+    <li><strong>Boundary:</strong> H(i,0)=0 and H(0,j)=0</li>
+    <li>Allows alignment to start anywhere in the strings.</li>
+    <li>Common in bioinformatics for finding homologous regions.</li>
+  </ul>
+
+  <p><strong>Recurrence:</strong></p>
+  <p>H(i,j) = max{ 0, match/mismatch, deletion, insertion }</p>
+</div>
+
+<div class="slide">
+  <h1>Comparative Summary</h1>
+
+  <table>
+    <tr>
+      <th>Feature</th>
+      <th>Wagner-Fischer</th>
+      <th>Smith-Waterman</th>
+    </tr>
+    <tr>
+      <td>Search Space</td>
+      <td>Global (Entire String)</td>
+      <td>Local (Subsegments)</td>
+    </tr>
+    <tr>
+      <td>Optimization</td>
+      <td>Minimization (Distance)</td>
+      <td>Maximization (Similarity)</td>
+    </tr>
+    <tr>
+      <td>Floor Value</td>
+      <td>None</td>
+      <td>0 (Truncates Negative Scores)</td>
+    </tr>
+    <tr>
+      <td>Traceback Start</td>
+      <td>D(m,n)</td>
+      <td>max(H)</td>
+    </tr>
+  </table>
+
+  <p>
+    <strong>Key Insight:</strong> Wagner-Fischer is best for complete sequence comparison, while Smith-Waterman excels at identifying highly similar local regions.
+  </p>
+</div>
+
+
+<div class="slide">
+  <h1>Bitset approach to LCS</h1>
+  <p>
+    Bit-parallel LCS accelerates the standard dynamic programming approach by using bitwise operations to process multiple cells simultaneously
+  </p>
+  <ul></ul>
+  <li>Speedup: Reduces time complexity from \(O(nm)\) to \(O(nm/w)\), where \(w\) is the word size (typically 64).</li>
+  <li>Mechanism: Uses bitmasks for character positions and bitwise logic (OR, AND, XOR, and subtraction) to update entire rows at once.</li>
+  <li>Best For: Large datasets (e.g., DNA sequencing) or competitive programming where \(N\) and \(M\) exceed 10,000.</li>
+  <li>Implementation: In C++, use unsigned long long arrays rather than std::bitset to allow for the subtraction operator, which is critical for the state update.</li>
+</div>
+
+<div class="slide">
+  <h1>Hunt-Szymanski approach</h1>
+  <p>The Hunt-Szymanski algorithm is an optimized way to find the Longest Common Subsequence (LCS).
+     Unlike standard methods that look at every possible pairing, this approach only looks at matching characters.
+      This makes it much faster when strings don't have many characters in common.
+  </p>
+  <ul>
+    <li>Match-Focused: It ignores non-matching pairs to save time.</li>
+    <li>Binary Search: It uses binary search to quickly update the potential LCS length.</li>
+    <li>Threshold Array: It keeps track of the best possible ending positions for subsequences of different lengths.</li>
+    <li>Performance: It shines in real-world tasks like file comparisons (the "diff" command).</li>
+    <br>
+    <p>The process involves pre-sorting character positions into a matchlist, iterating through the first string, and updating a threshold array using binary search for every match found.</p>
+  </ul>
+  <br>
+  <h2>Verdict</h2>
+    <p>Summary: Hunt-Szymanski is an efficient LCS algorithm that focuses strictly on matching character pairs. By using binary search and pre-processed matchlists, it outperforms standard dynamic programming on sparse data, reducing complexity from \(O(mn)\) to \(O((r+n) \log n)\).</p>
+</div>
+
+
+<div class="slide">
+  <h1>The Kuo-Cross (KC) Algorithm</h1>
+
+  <p>
+    The Kuo-Cross (KC) algorithm is an efficient method for finding the length of the Longest Common Subsequence (LCS) of two strings. It was designed as an improvement over the Hunt-Szymanski algorithm by reducing unnecessary updates to the threshold array.
+  </p>
+
+  <h2>Key Features</h2>
+  <ul>
+    <li>Focuses on calculating the length of the LCS.</li>
+    <li>Faster than basic dynamic programming by focusing only on matching characters.</li>
+    <li>Optimizes the threshold array by processing matches in a specific order.</li>
+    <li>Works best when input strings are very similar.</li>
+  </ul>
+
+  <h2>Performance</h2>
+  <ul>
+    <li>Time complexity is roughly O(n(r + log n)), where r is the number of matching pairs.</li>
+    <li>Creates significantly fewer data nodes than previous algorithms.</li>
+    <li>Requires space proportional to the number of matches and string length.</li>
+  </ul>
+
+  <h2>Methodology</h2>
+  <p>
+    It uses match lists to track character pairs and processes diagonal paths in the DP table. This avoids filling the entire table, making it highly efficient for practical use cases.
+  </p>
+
+  <h2>Summary</h2>
+  <ul>
+    <li><strong>What:</strong> A fast algorithm for the Longest Common Subsequence length.</li>
+    <li><strong>Advantage:</strong> Much more efficient than standard dynamic programming for similar strings.</li>
+    <li><strong>How:</strong> It minimizes threshold updates by focusing on specific match points.</li>
+    <li><strong>Verdict:</strong> One of the best non-bit-parallel algorithms for string comparison.</li>
+  </ul>
+</div>
+
+<div class="slide">
+  <h1>Apostolico & Eppstein et al. approach</h1>
+
+  <p>
+    To understand the complexity of the Apostolico and Eppstein approach, we examine the cost of searching separately from the cost of processing matches.
+  </p>
+
+  <p><strong>Total Time Components:</strong></p>
+  <ul>
+    <li><strong>Finding Matches:</strong> O(n log |Σ| + |M|)</li>
+    <li>Locates every position where characters match.</li>
+    <li>|M| represents the total number of matching pairs (i, j).</li>
+  </ul>
+
+  <ul>
+    <li><strong>Processing Matches (Sparse Step):</strong> O(|M| log log n) or O(|M| log n)</li>
+    <li>Each match performs a Point-Dominance Query.</li>
+    <li>Uses structures such as Fenwick Trees, Van Emde Boas Trees, or balanced BSTs.</li>
+    <li>The logarithmic factor comes from searching these structures efficiently.</li>
+  </ul>
+
+  <p><strong>Bottom Line:</strong> Total time is approximately O(|M| log n).</p>
+
+  <ul>
+    <li>Worst case: |M| = n², making it slower than standard DP.</li>
+    <li>Best case: sparse matches lead to significant gains over O(n²).</li>
+  </ul>
+</div>
+
+<div class="slide">
+  <h1>Apostolico & Eppstein et al. approach cotd.: Space Complexity Analysis</h1>
+
+  <p>
+    Apostolico and Eppstein reduce storage requirements by focusing on match coordinates rather than the full dynamic programming grid.
+  </p>
+
+  <ul>
+    <li><strong>Storing Matches:</strong> O(|M|)</li>
+    <li>Stores coordinates for every matching pair to enable sparse processing.</li>
+  </ul>
+
+  <ul>
+    <li><strong>Data Structure Overhead:</strong> O(n)</li>
+    <li>Search structures tracking optimal paths only scale with one string dimension.</li>
+  </ul>
+
+  <p>
+    Standard LCS often reasons in terms of the full n × m grid, while this approach shifts storage cost toward actual matches.
+  </p>
+
+  <p><strong>Bottom Line:</strong> Space complexity is O(n + |M|).</p>
+
+  <ul>
+    <li>Very efficient when matches are sparse.</li>
+    <li>Space grows significantly when strings are highly similar.</li>
+  </ul>
+</div>
+
+<div class="slide">
+  <h1>Comparison & Key Takeaway</h1>
+
+  <h2>Comparison Table</h2>
+  <table>
+    <tr>
+      <th>Feature</th>
+      <th>Standard DP (Wagner-Fischer)</th>
+      <th>Apostolico-Eppstein (Sparse)</th>
+    </tr>
+    <tr>
+      <td>Best For</td>
+      <td>Similar strings (many matches)</td>
+      <td>Different strings (few matches)</td>
+    </tr>
+    <tr>
+      <td>Time</td>
+      <td>O(nm)</td>
+      <td>O(|M| log n)</td>
+    </tr>
+    <tr>
+      <td>Space</td>
+      <td>O(min(n, m))</td>
+      <td>O(n + |M|)</td>
+    </tr>
+    <tr>
+      <td>Dependency</td>
+      <td>String length</td>
+      <td>Number of matches</td>
+    </tr>
+  </table>
+
+  <h2>Key Takeaway</h2>
+  <p>
+    Apostolico-Eppstein is an output-sensitive algorithm. Its performance depends not only on string length, but also on how much the strings have in common.
+  </p>
+
+  <ul>
+    <li>Highly efficient when matches are sparse.</li>
+    <li>Less effective when strings are nearly identical.</li>
+  </ul>
+</div>
+
+
+
+<div class="slide">
+  <h2>Method Pipeline</h2>
+  <div class="code-box">A, B
+↓
+Construct CET
+↓
+Flatten buckets to pairs (value, bucket)
+↓
+Solve 2D LIS
+↓
+Recover LSBS
+↓
+Recover LCS</div>
+</div>
+
+<div class="slide">
+  <h2>Comparison with Existing Methods</h2>
+  <table style="width:100%; font-size:1.05rem; border-collapse: collapse;">
+    <tr><th align="left">Method</th><th align="left">Strength</th><th align="left">Weakness</th></tr>
+    <tr><td>Classical DP</td><td>Deterministic, simple</td><td>Dense O(nm)</td></tr>
+    <tr><td>Hunt-Szymanski</td><td>Sparse efficiency</td><td>Harder to interpret</td></tr>
+    <tr><td>Bitset LCS</td><td>Fast on small alphabets</td><td>Architecture dependent</td></tr>
+    <tr><td><b>LSBS (ours)</b></td><td>Interpretable sparse reduction</td><td>CET can degrade when dense</td></tr>
+  </table>
+</div>
+
+<div class="slide">
+  <h2>Algorithm Demo: CET Construction</h2>
+  <canvas id="cetCanvas" width="900" height="420"></canvas>
+</div>
+
+<div class="slide">
+  <h2>Algorithm Demo: 2D LIS via Patience Sorting</h2>
+  <canvas id="lisCanvas" width="900" height="420"></canvas>
+</div>
+
+<div class="slide">
+  <h2>Algorithm Demo: Hunt-Szymanski Intuition</h2>
+  <canvas id="hsCanvas" width="900" height="420"></canvas>
+  <p>Threshold maintenance and sparse match progression.</p>
+</div>
+
+<div class="slide">
+  <h2>Benchmark Section</h2>
+  <p>Insert your own charts/screenshots here before recording.</p>
+  <div class="code-box">Replace this section with benchmark PNGs from your paper.</div>
+</div>
+
+<div class="slide">
+  <h2>Key Contributions</h2>
+  <ul>
+    <li>Formal reduction from LCS to LSBS</li>
+    <li>Efficient near O(M log M) solver for sparse instances</li>
+    <li>Alternative conceptual bridge to Hunt-Szymanski</li>
+  </ul>
+</div>
+
+<div class="slide">
+  <h2>Limitations and Future Work</h2>
+  <ul>
+    <li>Dense CET may increase memory cost</li>
+    <li>Potential GPU acceleration</li>
+    <li>Generalization to weighted or approximate sequence matching</li>
+  </ul>
+</div>
+
+<div class="slide">
+  <h2>Thank You</h2>
+  <p>Questions?</p>
+</div>
+
+<div class="nav">
+  <button onclick="prevSlide()">Previous</button>
+  <button onclick="nextSlide()">Next</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+
+  function showSlide(i) {
+    slides[current].classList.remove('active');
+    current = (i + slides.length) % slides.length;
+    slides[current].classList.add('active');
+  }
+
+  function nextSlide() { showSlide(current + 1); }
+  function prevSlide() { showSlide(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+
+  const cet = document.getElementById('cetCanvas');
+  if (cet) {
+    const ctx = cet.getContext('2d');
+    let x = 50;
+    setInterval(() => {
+      ctx.clearRect(0,0,900,420);
+      for(let i=0;i<8;i++) {
+        ctx.strokeStyle='white';
+        ctx.strokeRect(50+i*90,100,60,60);
+        if(i*90 < x) {
+          ctx.fillStyle='rgba(120,180,255,0.7)';
+          ctx.fillRect(50+i*90,100,60,60);
+        }
+      }
+      x += 20;
+      if(x > 800) x = 50;
+    }, 300);
+  }
+
+  const hs = document.getElementById('hsCanvas');
+  if (hs) {
+    const ctx3 = hs.getContext('2d');
+    let t = 0;
+    setInterval(() => {
+      ctx3.clearRect(0,0,900,420);
+      for(let i=0;i<6;i++) {
+        ctx3.strokeStyle='white';
+        ctx3.strokeRect(120+i*100,180-i*20,60,40);
+        if(i<=t) {
+          ctx3.fillStyle='rgba(140,220,180,0.7)';
+          ctx3.fillRect(120+i*100,180-i*20,60,40);
+        }
+      }
+      t=(t+1)%6;
+    },700);
+  }
+
+  const lis = document.getElementById('lisCanvas');
+  if (lis) {
+    const ctx2 = lis.getContext('2d');
+    const pts = [[100,300],[180,250],[260,280],[340,180],[420,210],[520,120],[650,80]];
+    let k = 0;
+    setInterval(() => {
+      ctx2.clearRect(0,0,900,420);
+      for(let i=0;i<pts.length;i++) {
+        ctx2.beginPath();
+        ctx2.arc(pts[i][0], pts[i][1], 10, 0, Math.PI*2);
+        ctx2.fillStyle = i <= k ? '#7cc0ff' : 'white';
+        ctx2.fill();
+      }
+      for(let i=0;i<k;i++) {
+        ctx2.beginPath();
+        ctx2.moveTo(pts[i][0], pts[i][1]);
+        ctx2.lineTo(pts[i+1][0], pts[i+1][1]);
+        ctx2.strokeStyle='#7cc0ff';
+        ctx2.stroke();
+      }
+      k = (k+1)%pts.length;
+    }, 700);
+  }
+</script>
+</body>
+</html>
