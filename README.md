@@ -171,7 +171,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 If you use this work in your research, please cite:
 ```bibtex
 @software{lsbs2026,
-  title={Longest Sorted Bucket Sequence: An Algorithmic Bridge Between LCS and 2D LIS},
+  title={Bucket-Constrained LCS Algorithm from 2D-LIS using Patience Sorting and Dynamic Programming},
   author={[Awwal Mohammed; Caroline Sumathi Selvarajah]},
   year={2026},
   url={https://github.com/awwalm/lsbs-pub}
